@@ -1,0 +1,15 @@
+{% load static %}
+{% block headblock %}
+<link rel="stylesheet" href = " {% static 'css/error_friends.css' %}">
+{% endblock headblock %}
+
+
+{% block content %}
+<div class="error-container">
+    <h1>Oops!</h1>
+    <p>Something went wrong. Please try again later.</p>
+    <a href="/" class="btn btn-primary btn-home">Go to Home</a>
+</div>
+{% endblock content %}
+
+
