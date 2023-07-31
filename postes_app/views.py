@@ -97,6 +97,37 @@ class Users_Poste_View (viewsets.ViewSet) :
 
 class Post_view (APIView) :
 
+
+    def get( self , request  ) :
+        postes_recommended = Post.postes.get_postes(request.data.get('id'))
+        try :  
+            postes_recommended = Post.postes.get_postes(request.data.get('id'))
+            postes_recommended = Post_serialiser(postes_recommended ,  many = True)
+
+        except Post.DoesNotExist : 
+            return Response({'message' : 'check the request 🚫'} , status = status.HTTP_400_BAD_REQUEST)
+
+        except : 
+            return Response(status = status.HTTP_400_BAD_REQUEST)
+                         #$ here we send only the object serialzer data not the object serialzer   
+        return Response( postes_recommended.data ,status = status.HTTP_200_OK)
+    
+    
+    
+    def post (self , request ) : 
+        serializer = Post_serialiser( data = request.data)
+
+        if serializer.is_valid() :
+            serializer.save()
+            # $ if the post created than we create the owner
+            #// we do it with a function in the Post manager
+            Post.postes.create_post_owner ( owner_id =  request.COOKIES , post_id = serializer.data)
+            return Response ( status = status.HTTP_201_CREATED)
+        
+        return Response (status = status.HTTP_400_BAD_REQUEST)
+    
+
+
     def delete (self , request ) : 
 
         try :
@@ -115,17 +146,6 @@ class Post_view (APIView) :
     
 
 
-    def post (self , request ) : 
-        serializer = Post_serialiser( data = request.data)
-
-        if serializer.is_valid() :
-            serializer.save()
-            # $ if the post created than we create the owner
-            #// we do it with a function in the Post manager
-            Post.postes.create_post_owner ( owner_id =  request.COOKIES , post_id = serializer.data)
-            return Response ( status = status.HTTP_201_CREATED)
-        
-        return Response (status = status.HTTP_400_BAD_REQUEST)
 
 
         
